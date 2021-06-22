@@ -3,8 +3,6 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 
-
-
 var firebaseConfig = {
   apiKey: process.env.REACT_APP_APIKEY,
   authDomain: process.env.REACT_APP_AUTHDOMAIN,
@@ -17,7 +15,6 @@ var firebaseConfig = {
 
 
 firebase.initializeApp(firebaseConfig)
-
 
 export const auth = firebase.auth()
 export const database = firebase.database()
