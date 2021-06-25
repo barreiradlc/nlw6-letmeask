@@ -9,37 +9,46 @@ import "../styles/auth.scss"
 import { useState } from "react"
 import { FormEvent } from "react"
 import { database } from "../services/firebase"
+import { useModal } from "../hooks/useModal"
 
 
-function Home(){
+function Home() {
+  const { Toast } = useModal()
   const { user, signInWithGoogle } = useAuth()
-  const [roomCode, setRoomCode ]= useState('')
+  const [roomCode, setRoomCode] = useState('')
 
   const history = useHistory()
-  
-  async function handleCreateRoom(){
-    if(!user){
+
+  async function handleCreateRoom() {
+    if (!user) {
       await signInWithGoogle()
     }
-    
-    history.push("/rooms/new")    
+
+    history.push("rooms/new")
   }
 
-  async function handleJoinRoom(event: FormEvent){
+  async function handleJoinRoom(event: FormEvent) {
     event.preventDefault()
 
-    if(roomCode.trim() === ''){
+    if (roomCode.trim() === '') {
       return;
     }
 
     const roomRef = await database.ref(`rooms/${roomCode}`).get()
 
-    if(!roomRef.exists()) {
+    if (!roomRef.exists()) {
       alert("Ops, sala inexistente. Confira o código e tente novamente :/")
       return;
     }
 
-    history.push(`/rooms/${roomCode}`)
+    if (roomRef.val().endedAt) {
+      return Toast.fire({
+        icon: 'error',
+        title: 'Sala encerrada!'
+      })
+    }
+
+    history.push(`rooms/${roomCode}`)
 
   }
 
@@ -50,7 +59,7 @@ function Home(){
         <strong>Crie salas de Q&amp;A ao vivo</strong>
         <p>Tire as dúvidas da sua audiência em tempo-real</p>
       </aside>
-      <main>        
+      <main>
         <div className="main-content">
           <img src={logoImg} alt="Letmeask" />
           <button className="create-room" onClick={handleCreateRoom}>
@@ -59,7 +68,7 @@ function Home(){
           </button>
           <div className="separator">ou entre em uma sala</div>
           <form onSubmit={handleJoinRoom}>
-            <input 
+            <input
               type="text"
               placeholder="Digite o código da sala"
               value={roomCode}
