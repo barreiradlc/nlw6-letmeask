@@ -24,7 +24,7 @@ function Home() {
       await signInWithGoogle()
     }
 
-    history.push("rooms/new")
+    history.push("/rooms/new")
   }
 
   async function handleJoinRoom(event: FormEvent) {
@@ -48,7 +48,7 @@ function Home() {
       })
     }
 
-    history.push(`rooms/${roomCode}`)
+    history.push(`/rooms/${roomCode}`)
 
   }
 
