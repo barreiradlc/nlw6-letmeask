@@ -26,5 +26,25 @@
 .language-button.active {
   border: 2px solid #835afd;
   opacity: 1;
-  
+}
+
+
+
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 1000ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 15ms ease-in-out;
 }

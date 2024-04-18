@@ -12,11 +12,8 @@ function Language() {
   const resolvedLanguage = i18n.language as LanguageInterface
 
   function handleChangeLanguage(language: string) {
-    i18next.changeLanguage(language, (err, t) => {
+    i18next.changeLanguage(language, (err, _) => {
       if (err) return console.log('something went wrong loading', err);
-      t('key'); 
-      
-      // window.location.reload();
     });
   }
 
