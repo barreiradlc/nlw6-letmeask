@@ -1,4 +1,5 @@
 import codyImg from "../assets/images/copy.svg"
+import { useLocale } from "../hooks/useLocale"
 
 import "../styles/room-code.scss"
 
@@ -7,6 +8,7 @@ type RoomCodeProps = {
 }
 
 function RoomCode({ code } : RoomCodeProps){
+  const { t } = useLocale()
 
   function copyRoomCodeToClipboard() {
       navigator.clipboard.writeText(code)
@@ -17,7 +19,7 @@ function RoomCode({ code } : RoomCodeProps){
       <div>
         <img src={codyImg} alt="Copy room code" />
       </div>
-      <span>Sala #{code}</span>
+      <span>{t('Room code label')} #{code}</span>
     </button>
   )
 }

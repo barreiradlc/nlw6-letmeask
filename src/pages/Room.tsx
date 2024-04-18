@@ -9,13 +9,18 @@ import { useRoom } from "../hooks/useRoom"
 import { database } from "../services/firebase"
 
 import "../styles/room.scss"
+import { useLocale } from "../hooks/useLocale"
+import { useModal } from "../hooks/useModal"
 
 type RoomParams = {
   id: string
 }
 
 function Room() {
-  const { user } = useAuth()
+  const { user, signInWithGoogle } = useAuth()
+  const { t } = useLocale()
+  const { Toast } = useModal()
+
   const [ newQuestion, setNewQuestion ] = useState('')
   
   const params = useParams<RoomParams>()
@@ -30,8 +35,22 @@ function Room() {
       return;
     }
 
-    if(!user){
-      throw new Error("You must be logged in!")
+    if(!user) {
+      const { isConfirmed } =  await Toast.fire({
+        timer: 5000,
+        showConfirmButton: true,
+        confirmButtonColor: "#ea4335",
+        showCancelButton: true,
+        icon: 'error',
+        title: t('Room error sending question unnauthorized'),
+        confirmButtonText: "Click here to login"
+      })
+
+      if(isConfirmed) {
+        signInWithGoogle()
+      }
+
+      return;
     }
 
     const question = {
@@ -47,9 +66,28 @@ function Room() {
     await database.ref(`rooms/${roomId}/questions`).push(question)
 
     setNewQuestion('')
-  }
+  }  
 
   async function handleLikeQuestion(questionId: string, likeId?: string) {
+
+    if(!user) {
+      const { isConfirmed } =  await Toast.fire({
+        timer: 5000,
+        showConfirmButton: true,
+        confirmButtonColor: "#ea4335",
+        showCancelButton: true,
+        icon: 'error',
+        title: t('Room error liking question'),
+        confirmButtonText: "Click here to login"
+      })
+
+      if(isConfirmed) {
+        signInWithGoogle()
+      }
+
+      return;
+    }
+
     if(likeId) {
       await database.ref(`rooms/${roomId}/questions/${questionId}/likes/${likeId}`).remove()
     } else {
@@ -70,13 +108,13 @@ function Room() {
 
       <main className="content">
         <div className="room-title">
-          <h1>Sala {title}</h1>
-          <span>{questions.length || 0} perguntas</span>
+          <h1>{t('Room')} : {title}</h1>
+          <span>{questions.length || 0} {t('Room questions')}</span>
         </div>
 
         <form onSubmit={handleSendQuestion}>
           <textarea 
-            placeholder="Oque você quer merguntar?" 
+            placeholder={t('Room create placeholder')} 
             onChange={event => setNewQuestion(event.target.value)} 
             value={newQuestion}
           />
@@ -88,9 +126,9 @@ function Room() {
                 <span>{user.name}</span>
               </div>
             ) : (
-              <span>Para enviar uma pergunta, <button>faça seu login.</button></span>
+              <span>{t('Room unauthorized user 1')} <button onClick={signInWithGoogle}>{t('Room unauthorized user 2')}</button></span>
             )}
-            <Button disabled={!user} onClick={handleSendQuestion} type="submit">Enviar pergunta</Button>
+            <Button disabled={!user} onClick={handleSendQuestion} type="submit">{t('Room send question button label')}</Button>
           </div>
         </form>
 
@@ -101,7 +139,7 @@ function Room() {
                 <button 
                   className={`like-button ${question.likeId ? 'liked' : ''}`}
                   type="button"
-                  aria-label="marcar como gostei"
+                  aria-label={t('Room mark as liked')}
                   onClick={() => handleLikeQuestion(question.id, question.likeId)}
                 >
                   {question.likeCount > 0 && <span>{question.likeCount}</span>}

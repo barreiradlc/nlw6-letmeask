@@ -10,11 +10,14 @@ import { useState } from "react"
 import { FormEvent } from "react"
 import { database } from "../services/firebase"
 import { useModal } from "../hooks/useModal"
-
+import { useLocale } from "../hooks/useLocale"
+import { AsideQA } from "../components/AsideQA"
 
 function Home() {
   const { Toast } = useModal()
   const { user, signInWithGoogle } = useAuth()
+  const { t } = useLocale()
+
   const [roomCode, setRoomCode] = useState('')
 
   const history = useHistory()
@@ -37,14 +40,16 @@ function Home() {
     const roomRef = await database.ref(`rooms/${roomCode}`).get()
 
     if (!roomRef.exists()) {
-      alert("Ops, sala inexistente. Confira o código e tente novamente :/")
-      return;
+      return Toast.fire({
+        icon: 'error',
+        title: t('Home error join room')
+      })
     }
 
     if (roomRef.val().endedAt) {
       return Toast.fire({
         icon: 'error',
-        title: 'Sala encerrada!'
+        title: t('Home error join finished room')
       })
     }
 
@@ -54,28 +59,26 @@ function Home() {
 
   return (
     <div id="page-auth">
-      <aside>
-        <img src={illustraImg} alt="Ilustração simbolizando perguntas e respostas" />
-        <strong>Crie salas de Q&amp;A ao vivo</strong>
-        <p>Tire as dúvidas da sua audiência em tempo-real</p>
-      </aside>
+
+      <AsideQA />
+
       <main>
         <div className="main-content">
           <img src={logoImg} alt="Letmeask" />
           <button className="create-room" onClick={handleCreateRoom}>
-            <img src={googleIcon} alt="Logo do google" />
-            Crie sua sala com o Google
+            <img src={googleIcon} alt={t('Home google logo')} />
+            {t('Home create room-w-google')}
           </button>
-          <div className="separator">ou entre em uma sala</div>
+          <div className="separator">{t('Home or join room')}</div>
           <form onSubmit={handleJoinRoom}>
             <input
               type="text"
-              placeholder="Digite o código da sala"
+              placeholder={t('Home join room placeholder')}
               value={roomCode}
               onChange={event => setRoomCode(event.target.value)}
             />
             <Button type="submit">
-              Entrar na sala
+              {t('Home join room button')}
             </Button>
           </form>
         </div>

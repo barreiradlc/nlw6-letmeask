@@ -13,8 +13,6 @@ const Toast = Swal.mixin({
 })
 
 function useModal(){
-
-
   return { Toast }  
 }
 

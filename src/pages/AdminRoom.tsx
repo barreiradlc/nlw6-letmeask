@@ -11,6 +11,7 @@ import { useRoom } from "../hooks/useRoom"
 import { database } from "../services/firebase"
 
 import "../styles/room.scss"
+import { useLocale } from "../hooks/useLocale"
 
 type RoomParams = {
   id: string
@@ -18,11 +19,11 @@ type RoomParams = {
 
 function AdminRoom() {
   const history = useHistory()
-  // const { user } = useAuth()  
+  const { t } = useLocale()
+  const { user } = useAuth()  
   
   const params = useParams<RoomParams>()
   const roomId = params?.id;
-
   const { questions, title } = useRoom(roomId)
 
   async function handleEndRoom() {
@@ -35,14 +36,12 @@ function AdminRoom() {
 
   async function handleDeleteQuestion(questionId: string) {
     const { isConfirmed } = await Swal.fire({
-      title: "Tem certeza que você deseja remover esta pergunta?",
+      title: t('Admin confirmation remove question'),
       showCancelButton: true,
-      confirmButtonText: "Sim",
+      confirmButtonText: t('Admin confirmation remove question yes'),
       confirmButtonColor: "#e558f9",
-      cancelButtonText: "Não",
+      cancelButtonText: t("Admin confirmation remove question no"),
     })
-
-    console.log(isConfirmed)
 
     if(isConfirmed) {
       await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
@@ -56,15 +55,15 @@ function AdminRoom() {
           <img src={logoImg} alt="Logo" />
           <div>
             <RoomCode code={roomId} />
-            <Button onClick={handleEndRoom} isOutlined>Encerrar sala</Button>
+            <Button onClick={handleEndRoom} isOutlined>{t('Admin terminate room')}</Button>
           </div>
         </div>
       </header>
 
       <main className="content">
         <div className="room-title">
-          <h1>Sala {title}</h1>
-          <span>{questions.length || 0} perguntas</span>
+          <h1>{t('Admin room label')} : {title}</h1>
+          <span>{questions.length || 0} {t('Admin room questions')}</span>
         </div>
 
        
@@ -73,7 +72,7 @@ function AdminRoom() {
             <div className="question-list" key={question.id}>
               <Question author={question.author} content={question.content} >
                 <button type="button" onClick={() => handleDeleteQuestion(question.id)}>
-                  <img src={deleteImage} alt="Remover pergunta" />
+                  <img src={deleteImage} alt={t('Admin remove question')} />
                 </button>
               </Question>
             </div>

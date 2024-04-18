@@ -7,18 +7,26 @@ import { Link, useHistory } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
 import { FormEvent, useState } from "react"
 import { database } from "../services/firebase"
-
+import { AsideQA } from "../components/AsideQA"
+import { useLocale } from "../hooks/useLocale"
+import { useModal } from "../hooks/useModal"
 
 function NewRoom(){
-  const { user } = useAuth()
   const history = useHistory()
+  const { user } = useAuth()
+  const { Toast } = useModal()
+  const { t } = useLocale()
+
   const [newRoom, setNewRoom] = useState('')
 
   async function handleCreateRoom(event: FormEvent){
     event.preventDefault()
 
     if(newRoom.trim() === ''){
-      return;
+      return Toast.fire({
+        icon: 'error',
+        title: t('New room error join room')
+      })
     }
 
     const roomRef = database.ref('rooms')
@@ -28,34 +36,31 @@ function NewRoom(){
       authorId: user?.id
     })
 
-    history.push(`/rooms/${firebaseRoom.key}`)
+    history.push(`/admin/rooms/${firebaseRoom.key}`)
   }
 
   return (
     <div id="page-auth">
-    <aside>
-      <img src={illustraImg} alt="Ilustração simbolizando perguntas e respostas" />
-      <strong>Crie salas de Q&amp;A ao vivo</strong>
-      <p>Tire as dúvidas da sua audiência em tempo-real</p>
-    </aside>
+    <AsideQA />
+
     <main>
       <div className="main-content">
         <img src={logoImg} alt="Letmeask" />
         <h1>{user?.name}</h1>
-        <h2>Criar uma nova sala</h2>
+        <h2>{t('New Room create')}</h2>
         <form onSubmit={handleCreateRoom}>
           <input 
             onChange={event => setNewRoom(event.target.value)}
             type="text"
             value={newRoom}
-            placeholder="Nome da sala"
+            placeholder={t('New Room name placeholder')}
           />
           <Button type="submit" >
-            Criar sala
+            {t('New Room button submit')}
           </Button>          
         </form>
         <p>
-          Quer entrar em uma sala existente? <Link to="/">clique aqui</Link>
+          {t('New Room existing room advice')} <Link to="/">{t('New Room existing room link')}</Link>
         </p>
       </div>
     </main>
