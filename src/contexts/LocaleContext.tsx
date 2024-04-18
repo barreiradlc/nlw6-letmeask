@@ -10,6 +10,7 @@ type LocaleContextType = {
 
 export const LocaleContext = createContext({} as LocaleContextType)
 
+
 type LocaleContextProviderProps = {
   children: ReactNode;
 }

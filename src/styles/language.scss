@@ -1,0 +1,30 @@
+.language-container{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0.5rem;
+
+  display: flex;
+  gap: 0.5rem;
+}
+
+.language-button {
+  // height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  
+  background: #fff;
+  border: 2px solid #dedeed;
+  cursor: pointer;
+  
+  display: flex;
+  opacity: 0.5;
+  transition: border .2s;
+  transition: opacity .5s;
+}
+
+.language-button.active {
+  border: 2px solid #835afd;
+  opacity: 1;
+  
+}
